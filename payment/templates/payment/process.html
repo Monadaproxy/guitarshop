@@ -1,0 +1,43 @@
+{% extends 'main/layout.html' %}
+
+{% block title %}
+    Оплата
+{% endblock %}
+
+{% block content %}
+<div class="features" style="color: black">
+    <center>
+            <div class="alert alert-secondary" style="margin-top: 0px;">
+                <h1 style="text-align: center;">Оплата заказа №{{ order.id }}</h1>
+                <div class="pay-card d-flex">
+                    <div class="cart-cardsproc">
+                        {% for item in order.items.all %}
+                            {% with product=item.product %}
+                                <div class="cart-card d-flex">
+                                    <div class="cart-card-img">
+                                      <img src="{{ product.image }}" alt="">
+                                    </div>
+                                    <div class="card-card-info">
+                                        <div class="alert alert-secondary" style="margin-left: -17px;">
+                                            <h3>{{ product.title }} ({{ item.amount }} шт)</h3>
+                                            <h2>{{ product.price }} ₽</h2>
+                                            <form action="{% url 'cart_remove' product.id %}" method="post">
+                                                {% csrf_token %}
+                                                <input type="submit" class="btn btn-danger" value="Удалить" style="float: right; margin-top: -25px;">
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <form action="{% url 'payment:process' %}" method="post" class="payform" style="text-align: center">
+                    {% csrf_token %}
+                    <input type="submit" value="Оплатить" class="btn btn-success" style="font-size: 25px; width: 250px;">
+                </form>
+            </div>
+    </center>
+</div>
+
+{% endblock %}

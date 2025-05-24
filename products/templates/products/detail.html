@@ -1,0 +1,169 @@
+{% extends 'main/layout.html' %}
+
+{% block title %}
+    Товары
+{% endblock %}
+
+{% block content %}
+    <div class="features" style="color: black">
+        <div class="alert alert-secondary" style="margin-top: 0px;">
+            {% if prod.images.count > 1 %}
+                <div class="product-gallery">
+                <div class="gallery-viewport">
+                {% for image in prod.images.all %}
+                    <img src="{{ image.image.url }}"
+                     class="gallery-image {% if forloop.first %}active{% endif %}"
+                     alt="{{ product.name }}">
+                {% endfor %}
+                </div>
+                {% if prod.images.count > 1 %}
+                <div class="gallery-nav">
+                    <button class="gallery-prev" aria-label="Previous image">&lsaquo;</button>
+                    <span class="image-counter">
+                        <span class="current">1</span>/{{ prod.images.count }}
+                    </span>
+                    <button class="gallery-next" aria-label="Next image">&rsaquo;</button>
+                </div>
+            {% endif %}
+        </div>
+        {% else %}
+            <img src="{{ product.image }}" alt="{{ product.name }}" style="text-align: center; height: 350px; width: 350px;">
+        {% endif %}
+            <h3>{{ product.title }}</h3>
+            <h5>{{ product.desc }}</h5>
+            <h5>В наличии: {{ product.amount }}</h5>
+            <h2 style=" text-align: center; font-size: 50px; height: 60px;">{{ product.price }} ₽</h2>
+            {% csrf_token %}
+            <span>{{ error }}</span>
+            <div class="suc_button" style="text-align: left; height: 0px;">
+                <a style="text-decoration: none;" href="{% url 'product-list' %}"><button class="btn btn-dark" style="width: 170px;">Вернуться</a></button>
+            </div>
+            <form action="{% url 'cart_add' product.id %}" class="qform" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="amount" value="1">
+                <input type="hidden" name="override_amount" value="False">
+                <div class="suc_button">
+                    <input type="submit" class="btn btn-success" style="width: 170px;" value="Добавить в корзину">
+                </div>
+            </form>
+        </div>
+    </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const images = document.querySelectorAll('.gallery-image');
+    const prevBtn = document.querySelector('.gallery-prev');
+    const nextBtn = document.querySelector('.gallery-next');
+    const counterCurrent = document.querySelector('.image-counter .current');
+
+    // Если изображение только одно - скрываем кнопки
+    if (images.length <= 1) {
+        if (prevBtn && nextBtn) {
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+        }
+        return;
+    }
+
+    let currentIndex = 0;
+
+    // Функция показа изображения
+    function showImage(index) {
+        // Скрываем все изображения
+        images.forEach(img => img.classList.remove('active'));
+
+        // Показываем текущее
+        images[index].classList.add('active');
+
+        // Обновляем счётчик
+        counterCurrent.textContent = index + 1;
+    }
+
+    // Обработчики кнопок
+    prevBtn.addEventListener('click', () => {
+        currentIndex = (currentIndex - 1 + images.length) % images.length;
+        showImage(currentIndex);
+    });
+
+    nextBtn.addEventListener('click', () => {
+        currentIndex = (currentIndex + 1) % images.length;
+        showImage(currentIndex);
+    });
+
+    // Добавляем обработку клавиатуры
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            prevBtn.click();
+        } else if (e.key === 'ArrowRight') {
+            nextBtn.click();
+        }
+    });
+});
+</script>
+
+<style>
+    .product-gallery {
+        position: relative;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .gallery-viewport {
+        position: relative;
+        height: 400px; /* Фиксированная высота */
+        overflow: hidden;
+    }
+
+    .gallery-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    }
+
+    .gallery-image.active {
+        opacity: 1;
+    }
+
+    .gallery-nav {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 15px;
+        gap: 20px;
+    }
+
+    .gallery-prev, .gallery-next {
+        background: #f0f0f0;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        font-size: 20px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .gallery-prev:hover, .gallery-next:hover {
+        background: #ddd;
+    }
+
+    .image-counter {
+        font-size: 16px;
+    }
+</style>
+
+
+<?php
+$link = mysqli_connect("localhost", "root", "", "dvddb");
+$sql = "SELECT dvdimage FROM dvd WHERE id=?";
+$result = mysqli_execute_query($link, $sql, [$_GET['id']]);
+$image = mysqli_fetch_column($result);
+header("Content-type: image/jpeg");
+echo $image>
+
+
+{% endblock %}

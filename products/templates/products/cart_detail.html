@@ -1,0 +1,59 @@
+{% extends 'main/layout.html' %}
+
+{% block title %}
+    Товары
+{% endblock %}
+
+{% block content %}
+    <div class="features" style="color: black">
+        {% if cart %}
+        <h2>Корзина</h2>
+            {% for item in cart %}
+                {% with p=item.product %}
+                    <div class="alert alert-secondary">
+                        <h4>{{ p.title }}</h4>
+                        <h5>Стоимость: {{ item.total_price }} ₽</h5>
+                        <small>Кол-во: {{ item.amount }} шт</small>
+                        <span>{{ error }}</span>
+                        <div class="suc_button">
+                            <a style="text-decoration: none;" href="{% url 'product-detail' p.id %}"><button class="btn btn-success">Перейти</button></a>
+                            <form action="{% url 'cart_remove' p.id %}" method="post">
+                            {% csrf_token %}
+                            <div style="suc_button">
+                                <button type="submit" class="btn btn-danger">Удалить</button>
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                {% endwith %}
+            {% endfor %}
+            <div class="total">
+                <h3>Общая сумма: {{ cart.get_total_price }} ₽</h3>
+            </div>
+            {% if not unpaid_order %}
+                <center>
+                    <a href="{% url 'orders:order_create' %}" class="btn btn-dark" style="font-size: 20px; width: 250px;">Перейти к оформлению заказа</a>
+                </center>
+            {% else %}
+                <center>
+                    <h2>Сначала оплатите предыдущий заказ!</h2>
+                </center>
+            {% endif %}
+        {% else %}
+            <div class="features" style="color: black">
+                <h1>Корзина пуста</h1>
+                <h3>Идите к ебене матери</h3>
+            </div>
+        {% endif %}
+    </div>
+
+<?php
+$link = mysqli_connect("localhost", "root", "", "dvddb");
+$sql = "SELECT dvdimage FROM dvd WHERE id=?";
+$result = mysqli_execute_query($link, $sql, [$_GET['id']]);
+$image = mysqli_fetch_column($result);
+header("Content-type: image/jpeg");
+echo $image>
+
+
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'main/layout.html' %}
+
+
+{% block title %}
+    Профиль
+{% endblock %}
+
+
+{% block content %}
+    <div class="features" style="color: black">
+        <div class="alert alert-secondary" style="margin-top: 0px;">
+                <div class="avatar-upload" style="text-align: center">
+                    <h1>Ваш профиль</h1>
+                    <h4>{{ user.username }}</h4>
+                    {% if request.user.profile.avatar %}
+                    <img src="{{ request.user.profile.avatar.url }}"
+                         class="avatar-preview" alt="Аватар">
+                    {% else %}
+                        <div class="avatar-preview"
+                             style="width: 50px; height: 50 px; border-radius: 50%; background: #eee; cursor: pointer;">
+                        </div>
+                    {% endif %}
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="upload-btn" style="display: none">Загрузить</button>
+                        <button onclick="document.getElementById('avatar-upload').click()"
+                            class="btn btn-primary mt-3"><i class="fas fa-upload"></i>Обновить</button>
+                    </form>
+                </div>
+        </div>
+        <div class="alert alert-secondary">
+                {% if orders %}
+                    <h3 style="text-align: center">Ваши заказы</h3>
+                    {% for ord in orders %}
+                        <h4>Заказ №{{ ord.id }}</h4>
+                        <h5>Статус: </h5>
+                        {% if ord.paid %}
+                            <h5 style="color: green">Оплачен</h5>
+                        {% else %}
+                            <h5 style="color: red;">Не оплачен</h5>
+                            <form action="{% url 'payment:process' %}" method="post" class="payform" style="text-align: right">
+                                {% csrf_token %}
+                                <input type="submit" value="Оплатить" class="btn btn-success" style="margin-top: -75px; font-size: 15px; width: 100px;">
+                            </form>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <h3 style="text-align: center;">Заказы отсутствуют</h3>
+                {% endif %}
+            </div>
+    </div>
+<script>
+document.getElementById('avatar-upload').addEventListener('change', function(e) {
+    if (e.target.files.length > 0) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            const preview = document.getElementById('avatar-preview');
+            if (preview.tagName === 'IMG') {
+                preview.src = e.target.result;
+            } else {
+                preview.innerHTML = `<img src="${e.target.result}" width="150" style="border-radius:50%">`;
+            }
+            document.querySelector('form').submit();
+        };
+
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+
+<style>
+.upload-btn {
+    background: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+</style>
+
+
+{% endblock %}

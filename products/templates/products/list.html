@@ -1,0 +1,61 @@
+{% extends 'main/layout.html' %}
+
+{% block title %}
+    Товары
+{% endblock %}
+
+{% block content %}
+    <center>
+    <h2>Товары</h2>
+    <h5>Здесь творится некоторое дерьмо.</h5>
+    </center>
+    <div class="features" style="color: black">
+        {% if products %}
+            {% for p in products %}
+                <div class="alert alert-secondary">
+                    {% if p.image %}
+                        <img src="{{ p.image }}" alt="{{ p.name }}" style="height: 200px; width: 250px;">
+                    {% else %}
+                        <p>⚠️ Изображение не загружено</p>
+                    {% endif %}
+                    <h2>{{ p.title }}</h2>
+                    <h2>{{ p.price }} ₽</h2>
+                    <span>{{ error }}</span>
+                    <div class="suc_button">
+                        <a style="text-decoration: none;" href="{% url 'product-detail' p.id %}"><button class="btn btn-success">Перейти</a>
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="alert alert-secondary" style="margin: 0px auto; color: black; text-align: center; width: 350px;">
+                <span class="step-links">
+                    <h4 style="text-align: center">
+                        Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+                    </h4>
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-dark">Предыдущая</a>
+                    {% endif %}
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}" class="btn btn-dark">Следующая</a>
+                    {% endif %}
+                </span>
+            </div>
+        {% else %}
+            <div class="feat_to_delete">
+                <h1>Товары отсутствуют</h1>
+                <h3>Идите к ебене матери</h3>
+            </div>
+        {% endif %}
+
+
+    </div>
+
+<?php
+$link = mysqli_connect("localhost", "root", "", "dvddb");
+$sql = "SELECT dvdimage FROM dvd WHERE id=?";
+$result = mysqli_execute_query($link, $sql, [$_GET['id']]);
+$image = mysqli_fetch_column($result);
+header("Content-type: image/jpeg");
+echo $image>
+
+
+{% endblock %}
